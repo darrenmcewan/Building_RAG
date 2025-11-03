@@ -23,7 +23,7 @@ def main() -> None:
 
     search_parser = subparsers.add_parser("search", help="Search movies using BM25")
     search_parser.add_argument("query", type=str, help="Search query")
-
+    
     tf_parser = subparsers.add_parser(
         "tf", help="Get term frequency for a given document ID and term"
     )
