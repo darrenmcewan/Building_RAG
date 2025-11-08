@@ -1,0 +1,7 @@
+*.pyc
+*.npy
+*.toml
+*.pkl
+__pycache__/
+cache/
+.venv/
