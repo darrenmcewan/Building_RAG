@@ -45,6 +45,22 @@ class SemanticSearch:
 
         return self.build_embeddings(documents)
     
+    def search(self, query, limit):
+        if self.embeddings is None:
+            raise ValueError("No embeddings loaded. Call `load_or_create_embeddings` first.")
+        query_embedding = self.generate_embedding(query)
+        cosine_similarities = []
+        for idx, doc_embedding in enumerate(self.embeddings):
+            similarity = cosine_similarity(query_embedding, doc_embedding)
+            cosine_similarities.append((similarity, idx))
+        cosine_similarities.sort(reverse=True, key=lambda x: x[0])
+        top_results = cosine_similarities[:limit]
+        results = []
+        for similarity, idx in top_results:
+            doc = self.documents[idx]
+            results.append((similarity, doc["title"], doc["description"]))
+        return results
+    
 def verify_model():
     try:
         model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -76,3 +92,13 @@ def embed_query_text(query):
     print(f"Query: {query}")
     print(f"First 5 dimensions: {embedding[:5]}")
     print(f"Shape: {embedding.shape}")
+
+def cosine_similarity(vec1, vec2):
+    dot_product = np.dot(vec1, vec2)
+    norm1 = np.linalg.norm(vec1)
+    norm2 = np.linalg.norm(vec2)
+
+    if norm1 == 0 or norm2 == 0:
+        return 0.0
+
+    return dot_product / (norm1 * norm2)
